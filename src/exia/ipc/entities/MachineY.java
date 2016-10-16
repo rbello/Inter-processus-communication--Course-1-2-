@@ -28,7 +28,7 @@ public class MachineY extends Machine {
 				if (job) {
 					
 					// On commence le travail
-					notifyChange(1);
+					//notifyChange(1);
 					Thread.sleep(1500);
 
 					// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
@@ -87,7 +87,7 @@ public class MachineY extends Machine {
 					}, "Y to Z").start();
 					
 					// Le produit sort de cette machine
-					notifyChange(0);
+					decrementCounter();
 					job = false;
 					
 				}

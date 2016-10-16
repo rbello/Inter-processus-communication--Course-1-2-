@@ -2,6 +2,9 @@ package exia.ipc.entities;
 
 import java.awt.Point;
 
+import exia.ipc.exceptions.CurrentAccessException;
+import exia.ipc.exceptions.NoMoreProductsException;
+
 public class MachineX extends Machine {
 
 	private int tempsTraitement = 4;
@@ -17,7 +20,7 @@ public class MachineX extends Machine {
 	
 	public final Product executeWork() {
 		try {
-			Thread.sleep(tempsTraitement * 1000 + (int)(Math.random() * 1500));
+			Thread.sleep(tempsTraitement * 500 + (int)(Math.random() * 1000));
 		}
 		catch (InterruptedException e) {
 			return null;
@@ -39,15 +42,17 @@ public class MachineX extends Machine {
 					notifyChange(1);
 					final Product p3 = executeWork();
 					p3.nextStep();
-					notifyChange(0);
 					
 					// On envoie vers la machine suivante
 					new Thread(new Runnable() {
 						public void run() {
 							try {
 								MachineY next = (MachineY) getOutputNode();
-								PrositIPC.move(p3, MachineX.this, next);
 								PrositIPC.Step2.onMachineRequest(MachineX.this, next);
+								notifyChange(0);
+								PrositIPC.move(p3, MachineX.this, next);
+								next.incrementCounter();
+								PrositIPC.Step2.onMachineExecute(MachineX.this, next);
 							}
 							catch (Throwable e) {
 								PrositIPC.handleError(e);
@@ -55,6 +60,17 @@ public class MachineX extends Machine {
 						}
 					}, "X to Y").start();
 					
+				}
+				else {
+					Thread.sleep(50);
+				}
+			}
+			catch (NoMoreProductsException | CurrentAccessException e) {
+				try {
+					// Pénalité de 3 secondes
+					Thread.sleep(3000);
+				} catch (InterruptedException e1) {
+					return;
 				}
 			}
 			catch (Throwable e) {

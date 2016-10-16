@@ -1,7 +1,7 @@
 package exia.ipc.fail;
 
-import exia.ipc.entities.InputDock;
 import exia.ipc.entities.IStep1Strategy;
+import exia.ipc.entities.InputDock;
 import exia.ipc.entities.Machine;
 import exia.ipc.entities.Product;
 import exia.ipc.exceptions.CurrentAccessException;

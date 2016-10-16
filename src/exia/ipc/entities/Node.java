@@ -73,6 +73,11 @@ public abstract class Node {
 		notifyChange(counter);
 	}
 	
+	public void decrementCounter() {
+		counter--;
+		notifyChange(counter);
+	}
+	
 	public void resetCounter() {
 		counter = 0;
 		notifyChange(0);

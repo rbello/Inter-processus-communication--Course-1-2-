@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import exia.ipc.entities.IndicatorListener;
 
@@ -59,6 +60,11 @@ public class Indicator extends JLabel implements IndicatorListener {
 	public void notifyChange(int value) {
 //		System.out.println("set " + value);
 		setValue(value);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				repaint();
+			}
+		});
 	}
 
 }

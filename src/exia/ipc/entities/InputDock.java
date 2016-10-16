@@ -75,7 +75,7 @@ public class InputDock extends Node implements Runnable {
 			notifyChange(stock.size());
 			
 			try {
-				Thread.sleep((5 + (int)(Math.random() * 5)) * 1000);
+				Thread.sleep((2 + (int)(Math.random() * 4)) * 1000);
 			}
 			catch (InterruptedException e) {
 				return;

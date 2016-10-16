@@ -1,5 +1,7 @@
 package exia.ipc.entities;
 
+import exia.ipc.exceptions.AllreadyFinishedProductException;
+
 public final class Product {
 
 	private int step = 0;
@@ -27,7 +29,8 @@ public final class Product {
 		return finished && step >= 5;
 	}
 
-	public void makeFinished() {
+	public void makeFinished() throws AllreadyFinishedProductException {
+		if (finished) throw new AllreadyFinishedProductException(this);
 		finished = true;
 	}
 	

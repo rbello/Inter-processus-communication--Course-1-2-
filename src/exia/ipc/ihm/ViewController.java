@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.SwingUtilities;
-
 import exia.ipc.entities.PrositIPC;
 
 public class ViewController implements Runnable {
@@ -38,26 +36,26 @@ public class ViewController implements Runnable {
 		
 		view.setVisible(true);
 		
-		while (!Thread.interrupted()) {
-			
-			for (Package p : new ArrayList<>(getMoves())) {
-				if (p != null) p.updatePosition();
-			}
-			
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					view.repaint();
-				}
-			});
-			
-			try {
-				Thread.sleep(400);
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-			
-		}
+//		while (!Thread.interrupted()) {
+//			
+//			for (Package p : new ArrayList<>(getMoves())) {
+//				if (p != null) p.updatePosition();
+//			}
+//			
+//			SwingUtilities.invokeLater(new Runnable() {
+//				public void run() {
+//					view.repaint();
+//				}
+//			});
+//			
+//			try {
+//				Thread.sleep(400);
+//			}
+//			catch (InterruptedException e) {
+//				return;
+//			}
+//			
+//		}
 		
 	}
 

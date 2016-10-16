@@ -8,6 +8,10 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import org.pushingpixels.trident.Timeline;
+import org.pushingpixels.trident.TimelineScenario;
+import org.pushingpixels.trident.TimelineScenario.Sequence;
+
 import exia.ipc.entities.Node;
 import exia.ipc.entities.Product;
 import exia.ipc.entities.PrositIPC;
@@ -21,26 +25,56 @@ public class Package extends JLabel {
 	private boolean reached = false;
 	private List<Point> route;
 	private Point next;
+
+	private Sequence scenario;
 	
 	public Package() {
 		setSize(45, 34);
 		setIcon(new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/Truck.png")));
 		setLocation(new Point(472, 185));
+		
 		route = new ArrayList<Point>();
 		route.add(new Point(new Point(472, 185)));
 		route.add(new Point(new Point(472, 230)));
-		route.add(new Point(new Point(0, 230)));
+		route.add(new Point(new Point(-80, 230)));
+		
 		next = route.remove(0);
+		
+		this.scenario = new TimelineScenario.Sequence();
+		
+		Point last = next;
+		for (Point pt : route) {
+			Timeline timeline = new Timeline(this);
+			timeline.addPropertyToInterpolate("location", last.getLocation(), pt);
+			last = pt;
+			scenario.addScenarioActor(timeline);
+		}
+		
+		
 	}
 	
 	public Package(Product p, Node from, Node to) {
+		
+		route = new ArrayList<Point>(Arrays.asList(from.getRoute(to)));
+		route.add(to.getInputLocation());
+		
+		this.scenario = new TimelineScenario.Sequence();
+		
+		Point last = from.getOutputLocation();
+		for (Point pt : route) {
+			Timeline timeline = new Timeline(this);
+			timeline.addPropertyToInterpolate("location", last.getLocation(), pt);
+			last = pt;
+			scenario.addScenarioActor(timeline);
+		}
+		
 		setIcon(new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/Package.png")));
 		//setText(p.getType().toString());
 		//setForeground(Color.YELLOW);
 		setLocation(from.getOutputLocation());
 		setSize(20, 20);
-		route = new ArrayList<Point>(Arrays.asList(from.getRoute(to)));
-		route.add(to.getInputLocation());
+		
+		
 		if (route.size() < 1) throw new NullPointerException("Invalid route");
 		next = route.remove(0);
 	}
@@ -78,6 +112,10 @@ public class Package extends JLabel {
 				this.reached = true;
 			}
 		}
+	}
+
+	public TimelineScenario getMoveScenario() {
+		return scenario;
 	}
 	
 }

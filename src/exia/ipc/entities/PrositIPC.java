@@ -8,6 +8,9 @@ import java.util.TimerTask;
 
 import javax.swing.SwingUtilities;
 
+import org.pushingpixels.trident.TimelineScenario;
+import org.pushingpixels.trident.TimelineScenario.TimelineScenarioState;
+
 import exia.ipc.fail.WrongStep1;
 import exia.ipc.fail.WrongStep2;
 import exia.ipc.fail.WrongStep3;
@@ -148,18 +151,28 @@ public class PrositIPC {
 	}
 
 	static void move(Product p, Node from, Node to) {
-		if (from.getRoute(to) == null) throw new NullPointerException("No route from " + from + " to " + to);
-		Package pk = new Package(p, from, to);
-		ctrl.getMoves().add(pk);
-		ctrl.view.gamePanel.add(pk);
-		pk.waitForDestinationReached();
+		move(new Package(p, from, to));
 	}
 	
+	private static void move(final Package pk) {
+		final TimelineScenario scenario = pk.getMoveScenario();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ctrl.view.gamePanel.add(pk);
+				scenario.play();
+			}
+		});
+		while (scenario.getState() != TimelineScenarioState.DONE) { }
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				ctrl.view.gamePanel.remove(pk);
+				ctrl.view.gamePanel.repaint();
+			}
+		});
+	}
+
 	static void truck() {
-		Package pk = new Package();
-		ctrl.getMoves().add(pk);
-		ctrl.view.gamePanel.add(pk);
-		pk.waitForDestinationReached();
+		move(new Package());
 	}
 	
 	static Thread moveAsynch(final Product p, final Node from, final Node to) {
