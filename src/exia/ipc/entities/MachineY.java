@@ -84,7 +84,7 @@ public class MachineY extends Machine {
 							PrositIPC.score();
 							
 						}
-					}).start();
+					}, "Y to Z").start();
 					
 					// Le produit sort de cette machine
 					notifyChange(0);

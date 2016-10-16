@@ -16,17 +16,12 @@ public class MachineX extends Machine {
 	}
 	
 	public final Product executeWork() {
-//		System.out.println("La machine " + getName() + " vient de prendre en charge un produit " + in1.getName());
-		
 		try {
 			Thread.sleep(tempsTraitement * 1000 + (int)(Math.random() * 1500));
 		}
 		catch (InterruptedException e) {
-			System.err.println("La machine " + getName() + " a été interrompue");
 			return null;
 		}
-//		System.out.println("La machine " + getName() + " a terminé");
-		
 		return new Product(Product.Type.M3);
 	}
 
@@ -58,7 +53,7 @@ public class MachineX extends Machine {
 								PrositIPC.handleError(e);
 							}
 						}
-					}).start();
+					}, "X to Y").start();
 					
 				}
 			}

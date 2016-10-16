@@ -126,7 +126,7 @@ public class PrositIPC {
 			
 		}
 		
-		new Thread(ctrl).start();
+		new Thread(ctrl, "View Updater").start();
 		
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			public void run() {
@@ -135,11 +135,11 @@ public class PrositIPC {
 						ctrl.view.labelCoins.setText("" + score);
 						score = 0;
 						outputDock.notifyChange(0);
-						truck();
 					}
 				});
+				truck();
 			}
-		}, 0L, 30000L);
+		}, 30000L, 30000L);
 		
 	}
 
@@ -167,7 +167,7 @@ public class PrositIPC {
 			public void run() {
 				move(p, from, to);
 			}
-		});
+		}, "Move asynch");
 		t.start();
 		return t;
 	}
