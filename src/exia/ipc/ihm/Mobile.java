@@ -16,7 +16,7 @@ import exia.ipc.entities.Node;
 import exia.ipc.entities.Product;
 import exia.ipc.entities.PrositIPC;
 
-public class Package extends JLabel {
+public class Mobile extends JLabel {
 
 	private static final long serialVersionUID = 1L;
 
@@ -28,7 +28,10 @@ public class Package extends JLabel {
 
 	private Sequence scenario;
 	
-	public Package() {
+	/**
+	 * Truck
+	 */
+	public Mobile() {
 		setSize(45, 34);
 		setIcon(new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/Truck.png")));
 		setLocation(new Point(472, 185));
@@ -42,10 +45,12 @@ public class Package extends JLabel {
 		
 		this.scenario = new TimelineScenario.Sequence();
 		
+		int i = 0;
 		Point last = next;
 		for (Point pt : route) {
 			Timeline timeline = new Timeline(this);
 			timeline.addPropertyToInterpolate("location", last.getLocation(), pt);
+			timeline.setDuration(i++ > 0 ? 4000 : 800);
 			last = pt;
 			scenario.addScenarioActor(timeline);
 		}
@@ -53,7 +58,10 @@ public class Package extends JLabel {
 		
 	}
 	
-	public Package(Product p, Node from, Node to) {
+	/**
+	 * Packages
+	 */
+	public Mobile(Product p, Node from, Node to) {
 		
 		route = new ArrayList<Point>(Arrays.asList(from.getRoute(to)));
 		route.add(to.getInputLocation());

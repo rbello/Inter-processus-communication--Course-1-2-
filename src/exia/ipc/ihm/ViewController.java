@@ -8,11 +8,11 @@ public class ViewController implements Runnable {
 
 	public View view;
 
-	private List<Package> moves;
+	private List<Mobile> moves;
 	
 	public ViewController(View v) {
 		this.view = v;
-		this.moves = new ArrayList<Package>();
+		this.moves = new ArrayList<Mobile>();
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class ViewController implements Runnable {
 		
 	}
 
-	public List<Package> getMoves() {
+	public List<Mobile> getMoves() {
 		return moves;
 	}
 

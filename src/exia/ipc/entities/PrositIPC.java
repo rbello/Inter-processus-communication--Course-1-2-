@@ -22,7 +22,7 @@ import exia.ipc.fail.WrongStep1;
 import exia.ipc.fail.WrongStep2;
 import exia.ipc.fail.WrongStep3;
 import exia.ipc.ihm.Indicator;
-import exia.ipc.ihm.Package;
+import exia.ipc.ihm.Mobile;
 import exia.ipc.ihm.View;
 import exia.ipc.ihm.ViewController;
 
@@ -181,10 +181,10 @@ public class PrositIPC {
 	}
 
 	static void move(Product p, Node from, Node to) {
-		move(new Package(p, from, to));
+		move(new Mobile(p, from, to));
 	}
 	
-	private static void move(final Package pk) {
+	private static void move(final Mobile pk) {
 		final TimelineScenario scenario = pk.getMoveScenario();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -202,7 +202,7 @@ public class PrositIPC {
 	}
 
 	static void truck() {
-		move(new Package());
+		move(new Mobile());
 	}
 	
 	static Thread moveAsynch(final Product p, final Node from, final Node to) {
