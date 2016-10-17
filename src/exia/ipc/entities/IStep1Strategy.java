@@ -5,6 +5,6 @@ import exia.ipc.exceptions.NoMoreProductsException;
 
 public interface IStep1Strategy {
 
-	Product onMachineRequest(InputDock dock, Machine machine) throws NoMoreProductsException, CurrentAccessException;
+	Product onMachineRequest(InputDock dock, MachineX machine) throws NoMoreProductsException, CurrentAccessException;
 	
 }

@@ -18,7 +18,6 @@ public final class Product {
 
 	void nextStep() {
 		step++;
-		//System.out.println("Passage au step " + step);
 	}
 
 	public Type getType() {

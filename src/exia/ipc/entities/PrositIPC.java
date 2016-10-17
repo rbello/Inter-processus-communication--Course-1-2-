@@ -220,7 +220,12 @@ public class PrositIPC {
 	}
 
 	public static void handleError(Throwable e) {
-		System.err.println(e.getClass().getSimpleName() + " Alerte ! " + e.getMessage());
+		if ("exia.ipc.exceptions".equals(e.getClass().getPackage().getName())) {
+			System.err.println("Alerte : " + e.getMessage());
+		}
+		else {
+			e.printStackTrace();
+		}
 	}
 
 	static void score() {

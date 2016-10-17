@@ -72,7 +72,7 @@ public class InputDock extends Node implements Runnable {
 			notifyChange(stock.size());
 			
 			try {
-				Thread.sleep((2 + (int)(Math.random() * 4)) * 1000);
+				Thread.sleep((2 + (int)(Math.random() * 4)) * 900);
 			}
 			catch (InterruptedException e) {
 				return;
@@ -95,7 +95,7 @@ public class InputDock extends Node implements Runnable {
 		l.notifyChange(stock.size());
 	}
 
-	public void addProducts(int i) {
+	void addProducts(int i) {
 		while (i-- > 0) addProduct(new Product(product));
 	}
 

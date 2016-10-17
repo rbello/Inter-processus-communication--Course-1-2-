@@ -62,23 +62,23 @@ public abstract class Node {
 		return routes.get(target);
 	}
 	
-	public Node getRoute(int index) {
+	Node getRoute(int index) {
 		return new ArrayList<Node>(routes.keySet()).get(index);
 	}
 	
 	int counter = 0;
 
-	public void incrementCounter() {
+	void incrementCounter() {
 		counter++;
 		notifyChange(counter);
 	}
 	
-	public void decrementCounter() {
+	void decrementCounter() {
 		counter--;
 		notifyChange(counter);
 	}
 	
-	public void resetCounter() {
+	void resetCounter() {
 		counter = 0;
 		notifyChange(0);
 	}

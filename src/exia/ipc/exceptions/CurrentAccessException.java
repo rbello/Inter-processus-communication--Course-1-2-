@@ -7,7 +7,7 @@ public class CurrentAccessException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
 	public CurrentAccessException(InputDock dock) {
-		super("Current access on dock " + dock.getName());
+		super("Accès concurrent sur le dock " + dock.getName() + " : 5 secondes de pénalité");
 	}
 	
 }

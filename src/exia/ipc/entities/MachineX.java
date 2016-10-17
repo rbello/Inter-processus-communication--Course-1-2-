@@ -50,7 +50,6 @@ public class MachineX extends Machine {
 					new Thread(new Runnable() {
 						public void run() {
 							try {
-								
 								notifyChange(0);
 								PrositIPC.move(p3, MachineX.this, next);
 								next.incrementCounter();
@@ -58,6 +57,7 @@ public class MachineX extends Machine {
 							}
 							catch (Throwable e) {
 								PrositIPC.handleError(e);
+								next.decrementCounter();
 							}
 						}
 					}, "X to Y").start();

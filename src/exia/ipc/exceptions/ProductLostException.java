@@ -7,7 +7,7 @@ public class ProductLostException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
 	public ProductLostException(Product p, String msg, Throwable cause) {
-		super("A product of type " + p.getType().toString() + " was lost ! (" + msg + ")", cause);
+		super("Un produit " + p.getType().toString() + " a été perdu : " + msg, cause);
 	}
 	
 	public ProductLostException(Product p, String msg) {

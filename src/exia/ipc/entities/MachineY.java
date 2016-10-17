@@ -16,94 +16,79 @@ public class MachineY extends Machine {
 	public void executeJob() throws MachineAllreadyUsedException {
 		if (job) throw new MachineAllreadyUsedException(this);
 		job = true;
-		while (job) { }
-	}
-	
-	@Override
-	public void run() {
-		
-		while (!Thread.interrupted()) {
-			
-			try {
-				if (job) {
-					
-					// On commence le travail
-					//notifyChange(1);
-					Thread.sleep(500);
 
-					// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
-					final Product product = new Product(Product.Type.M4);
-					product.nextStep();
-					product.nextStep();
+		try {
+			
+			// On commence le travail
+			Thread.sleep(400);
+
+			// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
+			final Product product = new Product(Product.Type.M4);
+			product.nextStep();
+			product.nextStep();
+		
+			// On demande à l'étudiant de choisir la bonne machine
+			final MachineZ machine = PrositIPC.Step3.chooseMachine((MachineZ) getRoute(0), (MachineZ) getRoute(1));
+			
+			// On vérifie qu'une machine a été choisie
+			if (machine == null) throw new ProductLostException(product, "pas de machine Z choisie");
+				
+			new Thread(new Runnable() {
+				public void run() {
 					
-					// On demande à l'étudiant de choisir la bonne machine
-					final MachineZ machine = PrositIPC.Step3.chooseMachine((MachineZ) getRoute(0), (MachineZ) getRoute(1));
+					// On déplace le produit
+					PrositIPC.move(product, MachineY.this, machine);
 					
-					// On vérifie qu'une machine a été choisie
-					if (machine == null) throw new ProductLostException(product, "no machine choosen");
+					// On fait executer le travail
+					try {
+						PrositIPC.Step3.onMachineRequest(
+								product,
+								machine,
+								machine.getNext(),
+								machine.getNext().getNext()
+						);
+					} catch (Throwable t) {
+						PrositIPC.handleError(t);
+					}
 					
-					new Thread(new Runnable() {
-						public void run() {
-							
-							// On déplace le produit
-							PrositIPC.move(product, MachineY.this, machine);
-							
-							// On fait executer le travail
-							try {
-								PrositIPC.Step3.onMachineRequest(
-										product,
-										machine,
-										machine.getNext(),
-										machine.getNext().getNext()
-								);
-							} catch (Throwable t) {
-								PrositIPC.handleError(t);
-							}
-							
-							// On vérifie que le produit soit terminé
-							int i = 0;
-							while (!product.isFinished()) {
-								try {
-									Thread.sleep(500);
-								} catch (InterruptedException e) {
-									return;
-								}
-								if (i++ >= 10) {
-									PrositIPC.handleError(new ProductLostException(product, "never finished"));
-									return;
-								}
-							}
-							
-							// Quand c'est terminé, on envoie vers le dépôt
-							PrositIPC.move(product, machine, machine.getOutputNode());
-							
-							// Et on incrémente le compteur de la plateforme de stockage
-							machine.getOutputNode().incrementCounter();
-							
-							// Et on incrémente le score
-							PrositIPC.score();
-							
+					// On vérifie que le produit soit terminé
+					int i = 0;
+					while (!product.isFinished()) {
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							return;
 						}
-					}, "Y to Z").start();
+						if (i++ >= 10) {
+							PrositIPC.handleError(new ProductLostException(product, "jamais terminé"));
+							return;
+						}
+					}
 					
-					// Le produit sort de cette machine
-					decrementCounter();
-					job = false;
+					// Quand c'est terminé, on envoie vers le dépôt
+					PrositIPC.move(product, machine, machine.getOutputNode());
+					
+					// Et on incrémente le compteur de la plateforme de stockage
+					machine.getOutputNode().incrementCounter();
+					
+					// Et on incrémente le score
+					PrositIPC.score();
 					
 				}
-				else {
-					Thread.sleep(100);
-				}
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-			catch (Exception e) {
-				PrositIPC.handleError(e);
-			}
+			}, "Y to Z").start();
+			
+			// Le produit sort de cette machine
+			decrementCounter();
 			
 		}
-		
+		catch (InterruptedException e) {
+			return;
+		}
+		catch (Exception e) {
+			PrositIPC.handleError(e);
+		}
+		finally {
+			job = false;
+		}
 	}
-
 }

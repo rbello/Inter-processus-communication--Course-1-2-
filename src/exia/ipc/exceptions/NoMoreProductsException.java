@@ -7,7 +7,7 @@ public class NoMoreProductsException extends Exception {
 	private static final long serialVersionUID = 1L;
 	
 	public NoMoreProductsException(InputDock dock) {
-		super("No more products on dock " + dock.getName());
+		super("Plus de produits sur le quai " + dock.getName());
 	}
 	
 }

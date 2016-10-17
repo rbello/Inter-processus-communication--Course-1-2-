@@ -29,8 +29,8 @@ public class MachineZ extends Machine {
 		notifyChange(1);
 		try {
 			if (type == 0) Thread.sleep(300);
-			else if (type == 1) Thread.sleep(2500);
-			else if (type == 2) Thread.sleep(1000);
+			else if (type == 1) Thread.sleep(2100);
+			else if (type == 2) Thread.sleep(1500);
 		} catch (InterruptedException e) {
 			return;
 		}
