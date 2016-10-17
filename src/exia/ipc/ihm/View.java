@@ -22,8 +22,6 @@ public class View extends JFrame {
 	public JLabel labelCoins;
 	public JTextArea textArea;
 
-	JButton startButton;
-
 	/**
 	 * Create the frame.
 	 */
@@ -62,10 +60,6 @@ public class View extends JFrame {
 		labelCoins.setIcon(new ImageIcon(View.class.getResource("/exia/ipc/ihm/res/coins.png")));
 		labelCoins.setBounds(10, 11, 90, 14);
 		gamePanel.add(labelCoins);
-		
-		startButton = new JButton("Go !");
-		startButton.setBounds(251, 290, 71, 23);
-		gamePanel.add(startButton);
 		
 		textArea = new JTextArea();
 		textArea.setForeground(Color.RED);

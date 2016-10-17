@@ -20,7 +20,7 @@ public class MachineX extends Machine {
 	
 	public final Product executeWork() {
 		try {
-			Thread.sleep(tempsTraitement * 500 + (int)(Math.random() * 1000));
+			Thread.sleep(tempsTraitement * 500 + (int)(Math.random() * 800));
 		}
 		catch (InterruptedException e) {
 			return null;
@@ -33,7 +33,7 @@ public class MachineX extends Machine {
 			
 			try {
 				// Si les deux matières premières sont disponibles
-				if (q1.isProductAvailable() && q2.isProductAvailable()) {
+//				if (q1.isProductAvailable() && q2.isProductAvailable()) {
 					final Product p1 = PrositIPC.Step1.onMachineRequest(q1, this);
 					final Product p2 = PrositIPC.Step1.onMachineRequest(q2, this);
 					Thread t1 = PrositIPC.moveAsynch(p1, q1, this);
@@ -43,12 +43,14 @@ public class MachineX extends Machine {
 					final Product p3 = executeWork();
 					p3.nextStep();
 					
+					final MachineY next = (MachineY) getOutputNode();
+					PrositIPC.Step2.onMachineRequest(MachineX.this, next);
+					
 					// On envoie vers la machine suivante
 					new Thread(new Runnable() {
 						public void run() {
 							try {
-								MachineY next = (MachineY) getOutputNode();
-								PrositIPC.Step2.onMachineRequest(MachineX.this, next);
+								
 								notifyChange(0);
 								PrositIPC.move(p3, MachineX.this, next);
 								next.incrementCounter();
@@ -60,15 +62,16 @@ public class MachineX extends Machine {
 						}
 					}, "X to Y").start();
 					
-				}
-				else {
-					Thread.sleep(50);
-				}
+//				}
+//				else {
+//					Thread.sleep(50);
+//				}
 			}
 			catch (NoMoreProductsException | CurrentAccessException e) {
 				try {
-					// Pénalité de 3 secondes
-					Thread.sleep(3000);
+					PrositIPC.handleError(e);
+					// Pénalité de 5 secondes
+					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
 					return;
 				}

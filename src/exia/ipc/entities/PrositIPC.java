@@ -2,10 +2,17 @@ package exia.ipc.entities;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.DataLine.Info;
 import javax.swing.SwingUtilities;
 
 import org.pushingpixels.trident.TimelineScenario;
@@ -29,13 +36,26 @@ public class PrositIPC {
 
 	private static ViewController ctrl;
 
-	public static boolean STARTED = false;
-
 	private static int score = 0;
 
 	private static OutputDock outputDock;
 
+	private static Clip audioClip;
+	private static AudioInputStream audioStream;
+
 	static {
+		
+		try {
+			File yourFile = new File(PrositIPC.class.getResource("/exia/ipc/ihm/res/smw_coin.wav").toURI());
+			audioStream = AudioSystem.getAudioInputStream(yourFile);
+		    AudioFormat format = audioStream.getFormat();
+		    Info info = new DataLine.Info(Clip.class, format);
+		    audioClip = (Clip) AudioSystem.getLine(info);
+		    audioClip.open(audioStream);
+		}
+		catch (Exception ex) {
+			audioClip = null;
+		}
 		
 		jobs = new ArrayList<Node>();
 
@@ -83,8 +103,8 @@ public class PrositIPC {
 		final MachineZ m8  = new MachineZ(3, m9);
 		
 		// S to P
-		m4.addRoute(m5, new Point(363, 95), new Point(363, 40));
-		m4.addRoute(m8, new Point(363, 95), new Point(363, 125));
+		m4.addRoute(m5, new Point(363, 95)/*, new Point(363, 40)*/);
+		m4.addRoute(m8, new Point(363, 95)/*, new Point(363, 125)*/);
 		
 		// Suit la plateforme de stockage
 		outputDock = new OutputDock();
@@ -102,7 +122,6 @@ public class PrositIPC {
 
 		for (Node r : jobs) {
 			if (r instanceof Runnable) {
-//				System.out.println("Init " + r);
 				new Thread((Runnable)r, "Thread " + r.getClass().getSimpleName()).start();				
 			}
 			Indicator indicator = new Indicator();
@@ -136,14 +155,25 @@ public class PrositIPC {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						ctrl.view.labelCoins.setText("" + score);
+						System.out.println("Vous avez gagné " + score + " € en 30 secondes");
 						score = 0;
-						outputDock.notifyChange(0);
+						outputDock.resetCounter();
 					}
 				});
 				truck();
 			}
 		}, 30000L, 30000L);
 		
+	}
+	
+	static void playSound() {
+		if (audioClip == null) return;
+		try {
+			audioClip.close();
+			audioClip.open(audioStream);
+		    audioClip.start();
+		}
+		catch (Exception ex) {}
 	}
 
 	static void register(Node job) {
@@ -195,6 +225,7 @@ public class PrositIPC {
 
 	static void score() {
 		score  += 10;
+		playSound();
 	}
 	
 	public static int getScore() {

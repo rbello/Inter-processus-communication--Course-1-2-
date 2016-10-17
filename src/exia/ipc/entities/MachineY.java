@@ -29,7 +29,7 @@ public class MachineY extends Machine {
 					
 					// On commence le travail
 					//notifyChange(1);
-					Thread.sleep(1500);
+					Thread.sleep(500);
 
 					// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
 					final Product product = new Product(Product.Type.M4);

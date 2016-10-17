@@ -23,44 +23,26 @@ public class MachineZ extends Machine {
 		this.next = next;
 	}
 
-	@Override
-	public void run() {
-		
-		while (!Thread.interrupted()) {
-			
-			try {
-				if (job != null) {
-					//System.out.println("Debut du travail pour machine " + getName());
-					notifyChange(1);
-					Thread.sleep(1500 + type * 150);
-					job.nextStep();
-					//System.out.println("Fin du travail pour machine " + getName());
-					notifyChange(0);
-					job = null;
-				}
-				else {
-					Thread.sleep(100);
-				}
-			}
-			catch (InterruptedException e) {
-				return;
-			}
-			catch (Exception e) {
-				PrositIPC.handleError(e);
-			}
-			
-		}
-		
-	}
-
 	public void executeJob(Product p) throws MachineAllreadyUsedException {
 		if (job != null) throw new MachineAllreadyUsedException(this);
 		job = p;
-		while (job != null) { }
+		notifyChange(1);
+		try {
+			if (type == 0) Thread.sleep(300);
+			else if (type == 1) Thread.sleep(2500);
+			else if (type == 2) Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			return;
+		}
+		p.nextStep();
+		notifyChange(0);
+		job = null;
 	}
 
 	public boolean isAvailable() {
-		return job == null;
+		boolean ready = job == null;
+		if (next != null) ready = ready && next.isAvailable();
+		return ready;
 	}
 
 	public MachineZ getNext() {

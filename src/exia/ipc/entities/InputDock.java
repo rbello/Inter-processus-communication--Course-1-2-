@@ -64,10 +64,7 @@ public class InputDock extends Node implements Runnable {
 		while (!Thread.interrupted()) {
 			
 			// Nombre de produits arrivés
-			int prod = 1 + (int)(Math.random() * 3);
-			if (!PrositIPC.STARTED) prod = 0;
-			
-			//System.out.println(prod + " produits sont arrivés au quai " + name);
+			int prod = 1 + (int)(Math.random() * 2);
 			
 			// Arrivés en stock
 			while (prod-- > 0) stock.add(new Product(product));
