@@ -5,22 +5,27 @@ import java.awt.Point;
 import exia.ipc.exceptions.MachineAllreadyUsedException;
 import exia.ipc.exceptions.ProductLostException;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class MachineY extends Machine {
-
-	private boolean job = false;
 
 	MachineY() {
 		super("Y", new Point(328, 72), new Point(260, 95), new Point(335, 95));
 	}
 
 	public void executeJob() throws MachineAllreadyUsedException {
-		if (job) throw new MachineAllreadyUsedException(this);
-		job = true;
+		if (counter >= 2) throw new MachineAllreadyUsedException(this);
+		
+		incrementCounter();
 
 		try {
 			
 			// On commence le travail
-			Thread.sleep(400);
+			Thread.sleep(600);
 
 			// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
 			final Product product = new Product(Product.Type.M4);
@@ -49,6 +54,7 @@ public class MachineY extends Machine {
 						);
 					} catch (Throwable t) {
 						PrositIPC.handleError(t);
+						return;
 					}
 					
 					// On vérifie que le produit soit terminé
@@ -85,10 +91,8 @@ public class MachineY extends Machine {
 			return;
 		}
 		catch (Exception e) {
+			decrementCounter();
 			PrositIPC.handleError(e);
-		}
-		finally {
-			job = false;
 		}
 	}
 }

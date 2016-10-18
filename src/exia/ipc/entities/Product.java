@@ -2,6 +2,12 @@ package exia.ipc.entities;
 
 import exia.ipc.exceptions.AllreadyFinishedProductException;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public final class Product {
 
 	private int step = 0;

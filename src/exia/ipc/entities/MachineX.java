@@ -5,6 +5,12 @@ import java.awt.Point;
 import exia.ipc.exceptions.CurrentAccessException;
 import exia.ipc.exceptions.NoMoreProductsException;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class MachineX extends Machine {
 
 	private int tempsTraitement = 4;
@@ -52,12 +58,10 @@ public class MachineX extends Machine {
 							try {
 								notifyChange(0);
 								PrositIPC.move(p3, MachineX.this, next);
-								next.incrementCounter();
 								PrositIPC.Step2.onMachineExecute(MachineX.this, next);
 							}
 							catch (Throwable e) {
 								PrositIPC.handleError(e);
-								next.decrementCounter();
 							}
 						}
 					}, "X to Y").start();

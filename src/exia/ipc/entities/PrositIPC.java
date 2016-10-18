@@ -2,7 +2,7 @@ package exia.ipc.entities;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -12,20 +12,30 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
-import javax.sound.sampled.DataLine.Info;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineEvent.Type;
+import javax.sound.sampled.LineListener;
 import javax.swing.SwingUtilities;
 
 import org.pushingpixels.trident.TimelineScenario;
 import org.pushingpixels.trident.TimelineScenario.TimelineScenarioState;
+import org.pushingpixels.trident.callback.TimelineScenarioCallback;
 
 import exia.ipc.fail.WrongStep1;
 import exia.ipc.fail.WrongStep2;
 import exia.ipc.fail.WrongStep3;
 import exia.ipc.ihm.Indicator;
 import exia.ipc.ihm.Mobile;
+import exia.ipc.ihm.PlaceHolder;
 import exia.ipc.ihm.View;
 import exia.ipc.ihm.ViewController;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class PrositIPC {
 	
 	private static ArrayList<Node> jobs;
@@ -40,36 +50,41 @@ public class PrositIPC {
 
 	private static OutputDock outputDock;
 
-	private static Clip audioClip;
 	private static AudioInputStream audioStream;
+	private static AudioFormat audioFormat;
+
+	private static int audioSize;
+
+	private static byte[] audioData;
+
+	private static javax.sound.sampled.DataLine.Info audioInfo;
 
 	static {
 		
-		try {
-			File yourFile = new File(PrositIPC.class.getResource("/exia/ipc/ihm/res/smw_coin.wav").toURI());
-			audioStream = AudioSystem.getAudioInputStream(yourFile);
-		    AudioFormat format = audioStream.getFormat();
-		    Info info = new DataLine.Info(Clip.class, format);
-		    audioClip = (Clip) AudioSystem.getLine(info);
-		    audioClip.open(audioStream);
-		}
-		catch (Exception ex) {
-			audioClip = null;
-		}
-		
-		jobs = new ArrayList<Node>();
-
 		Step1 = new WrongStep1();
 		Step2 = new WrongStep2();
 		Step3 = new WrongStep3();
 		
-		// Sur le premier quai arrivent les chassis
-		final InputDock q1 = new InputDock(Product.Type.M1, new Point(50, 38), new Point(78, 63));
-		q1.addProducts(1);
+		try {
+			URL yourFile = PrositIPC.class.getResource("/exia/ipc/ihm/res/smw_coin.wav");
+			audioStream = AudioSystem.getAudioInputStream(yourFile);
+			audioFormat = audioStream.getFormat();
+			audioSize = (int) (audioFormat.getFrameSize() * audioStream.getFrameLength());
+			audioData = new byte[audioSize];
+			audioInfo = new DataLine.Info(Clip.class, audioFormat, audioSize);
+			audioStream.read(audioData, 0, audioSize);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		
-		// Sur le second quai arrivent les pièces de carrosserie
+		jobs = new ArrayList<Node>();
+
+		// Quais d'arrivé
+		final InputDock q1 = new InputDock(Product.Type.M1, new Point(50, 38), new Point(78, 63));
 		final InputDock q2 = new InputDock(Product.Type.M2, new Point(50, 160), new Point(78, 130));
-		q2.addProducts(1);
+		q1.addProducts(3);
+		q2.addProducts(2);
 		
 		// Suivent 3 machines qui se partagent les produits sur les quais d'arrivées
 		// Ils ont pour but d'assembler les deux pièces
@@ -85,12 +100,12 @@ public class PrositIPC {
 		q1.addRoute(m3, new Point(78, 95), new Point(143, 95), new Point(143, 125));
 		q2.addRoute(m3, new Point(78, 95), new Point(143, 95), new Point(143, 125));
 		
-		// Suit une machine unique qui introduit le moteur dans la voiture
+		// Suit une machine unique acceptant 2 produits à la fois
 		final MachineY m4 = new MachineY();
 		
 		// P to S
 		m1.addRoute(m4, new Point(238, 67), new Point(238, 95));
-		m2.addRoute(m4, new Point(238, 95));
+		m2.addRoute(m4, new Point(230, 95), new Point(238, 95));
 		m3.addRoute(m4, new Point(238, 125), new Point(238, 95));
 
 		// Suivent deux files de 3 machines Z
@@ -117,18 +132,30 @@ public class PrositIPC {
 
 	public static void start() {
 		
-		View v = new View();
-		ctrl = new ViewController(v);
-
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				View v = new View();
+				ctrl = new ViewController(v);
+				ctrl.run();
+				beginStart();
+			}
+		});
+		
+	}
+	
+	private static void beginStart() {
+		
+		System.out.println("Go !");
+		
 		for (Node r : jobs) {
 			if (r instanceof Runnable) {
 				new Thread((Runnable)r, "Thread " + r.getClass().getSimpleName()).start();				
 			}
-			Indicator indicator = new Indicator();
+			Indicator indicator = new Indicator(r.getIndicatorLocation());
 			r.addIndicatorListener(indicator);
 			indicator.setSize(new Dimension(16, 14));
 			indicator.setLocation(r.getIndicatorLocation());
-			v.gamePanel.add(indicator);
+			ctrl.view.gamePanel.add(indicator);
 			
 			// Debug : afficher les entrées/sorties des machines sur la vue
 //			if (r.getInputLocation() != null) {
@@ -148,14 +175,12 @@ public class PrositIPC {
 			
 		}
 		
-		new Thread(ctrl, "View Updater").start();
-		
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						ctrl.view.labelCoins.setText("" + score);
-						System.out.println("Vous avez gagné " + score + " € en 30 secondes");
+						System.out.println("Vous avez gagné " + score + " pièces d'or en 30 secondes");
 						score = 0;
 						outputDock.resetCounter();
 					}
@@ -167,13 +192,22 @@ public class PrositIPC {
 	}
 	
 	static void playSound() {
-		if (audioClip == null) return;
 		try {
-			audioClip.close();
-			audioClip.open(audioStream);
-		    audioClip.start();
+			final Clip clip = (Clip) AudioSystem.getLine(audioInfo);
+            clip.open(audioFormat, audioData, 0, audioSize);
+            clip.addLineListener(new LineListener() {
+				@Override
+				public void update(LineEvent event) {
+					if (event.getType() == Type.STOP) {
+						clip.close();
+					}
+				}
+			});
+            clip.start();
 		}
-		catch (Exception ex) {}
+		catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	static void register(Node job) {
@@ -181,28 +215,45 @@ public class PrositIPC {
 	}
 
 	static void move(Product p, Node from, Node to) {
-		move(new Mobile(p, from, to));
+		move(new Mobile(ctrl.view.gamePanel, p, from, to));
 	}
 	
-	private static void move(final Mobile pk) {
-		final TimelineScenario scenario = pk.getMoveScenario();
+	private static void move(final Mobile mobile) {
+		
+		// On demande le scénario de mouvement au mobile
+		final TimelineScenario scenario = mobile.getMoveScenario();
+		
+		// On s'inscrit comme listener de la fin de l'animation
+		final PlaceHolder<Boolean> done = new PlaceHolder<Boolean>(false);
+		scenario.addCallback(new TimelineScenarioCallback() {
+			public void onTimelineScenarioDone() {
+				done.setValue(true);
+			}
+		});
+		
+		// On lance le scénario
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				ctrl.view.gamePanel.add(pk);
+				ctrl.view.gamePanel.add(mobile);
 				scenario.play();
 			}
 		});
-		while (scenario.getState() != TimelineScenarioState.DONE) { }
+		
+		// On bloque jusqu'à la fin de l'animation
+		while (done.getValue() == false && scenario.getState() != TimelineScenarioState.DONE);
+		
+		// On retire le mobile et on repaint la fenêtre
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				ctrl.view.gamePanel.remove(pk);
+				ctrl.view.gamePanel.remove(mobile);
 				ctrl.view.gamePanel.repaint();
 			}
 		});
+		
 	}
 
 	static void truck() {
-		move(new Mobile());
+		move(new Mobile(ctrl.view.gamePanel));
 	}
 	
 	static Thread moveAsynch(final Product p, final Node from, final Node to) {
@@ -222,6 +273,7 @@ public class PrositIPC {
 	public static void handleError(Throwable e) {
 		if ("exia.ipc.exceptions".equals(e.getClass().getPackage().getName())) {
 			System.err.println("Alerte : " + e.getMessage());
+			score -= 5;
 		}
 		else {
 			e.printStackTrace();

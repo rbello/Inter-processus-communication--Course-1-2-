@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public abstract class Node {
 
 	private List<IndicatorListener> listeners = new ArrayList<IndicatorListener>();
@@ -14,6 +20,7 @@ public abstract class Node {
 	private Point indicatorLocation;
 	private Point inputLocation;
 	private Point outputLocation;
+	int counter = 0;
 
 	Node(String name, Point indicatorLocation, Point inputLocation, Point outputLocation) {
 		this.name = name;
@@ -66,8 +73,7 @@ public abstract class Node {
 		return new ArrayList<Node>(routes.keySet()).get(index);
 	}
 	
-	int counter = 0;
-
+	
 	void incrementCounter() {
 		counter++;
 		notifyChange(counter);

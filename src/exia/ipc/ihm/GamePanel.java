@@ -3,10 +3,19 @@ package exia.ipc.ihm;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class GamePanel extends JPanel {
 	
 	private static final long serialVersionUID = 1L;
@@ -19,15 +28,23 @@ public class GamePanel extends JPanel {
 	
 	@Override
 	public void paint(Graphics g) {
-		g.drawImage(imgA, 0, 0, null);
+		g.drawImage(imgA, 0, 0, getWidth(), getHeight(), null);
 		peer = !peer;
 		super.paint(g);
 	}
 	
-	@Override
-	public Dimension getMaximumSize() {
-		return dim;
+	public double getRatioX() {
+		return getWidth() / dim.getWidth();
 	}
+	
+	public double getRatioY() {
+		return getHeight() / dim.getHeight();
+	}
+	
+//	@Override
+//	public Dimension getMaximumSize() {
+//		return dim;
+//	}
 	
 	@Override
 	public Dimension getMinimumSize() {
@@ -37,6 +54,18 @@ public class GamePanel extends JPanel {
 	@Override
 	public Dimension getPreferredSize() {
 		return dim;
+	}
+
+	public Point applyRatio(Point location) {
+		return new Point((int)(location.x * getRatioX()), (int)(location.y * getRatioY()));
+	}
+
+	public List<Point> applyRatio(List<Point> route) {
+		List<Point> out = new ArrayList<Point>();
+		for (Point p : route) {
+			out.add(applyRatio(p));
+		}
+		return out;
 	}
 
 }

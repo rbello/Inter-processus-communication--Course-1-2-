@@ -8,6 +8,12 @@ import exia.ipc.entities.Product.Type;
 import exia.ipc.exceptions.CurrentAccessException;
 import exia.ipc.exceptions.NoMoreProductsException;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class InputDock extends Node implements Runnable {
 
 	private List<Product> stock = new ArrayList<Product>();
@@ -64,7 +70,7 @@ public class InputDock extends Node implements Runnable {
 		while (!Thread.interrupted()) {
 			
 			// Nombre de produits arrivés
-			int prod = 1 + (int)(Math.random() * 2);
+			int prod = 1 + (int)(Math.random() * 3);
 			
 			// Arrivés en stock
 			while (prod-- > 0) stock.add(new Product(product));

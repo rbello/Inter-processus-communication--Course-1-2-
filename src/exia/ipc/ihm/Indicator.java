@@ -3,12 +3,19 @@ package exia.ipc.ihm;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
 import exia.ipc.entities.IndicatorListener;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class Indicator extends JLabel implements IndicatorListener {
 
 	private static final long serialVersionUID = 1L;
@@ -17,6 +24,16 @@ public class Indicator extends JLabel implements IndicatorListener {
 	
 	private Dimension dimMax = new Dimension(20, 35);
 	private Dimension dimMin = new Dimension(25, 20);
+
+	private Point location;
+	
+	public Indicator(Point location) {
+		this.location = location;
+	}
+	
+	public Point getDefaultLocation() {
+		return location;
+	}
 	
 	@Override
 	public void paint(Graphics g) {
@@ -58,8 +75,8 @@ public class Indicator extends JLabel implements IndicatorListener {
 
 	@Override
 	public void notifyChange(int value) {
-//		System.out.println("set " + value);
 		setValue(value);
+		// Mise à jour graphique
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				repaint();

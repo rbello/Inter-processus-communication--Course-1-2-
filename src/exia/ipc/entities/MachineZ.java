@@ -4,6 +4,12 @@ import java.awt.Point;
 
 import exia.ipc.exceptions.MachineAllreadyUsedException;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class MachineZ extends Machine {
 
 	private Product job = null;
@@ -14,7 +20,7 @@ public class MachineZ extends Machine {
 		this(id, null);
 	}
 
-	public MachineZ(int id, MachineZ next) {
+	MachineZ(int id, MachineZ next) {
 		super("Z" + id, 
 				new Point(405, 12 + id * 25 + (id > 2 ? 30 : 0)),
 				new Point(368, 28 + id * 23 + (id > 2 ? 30 : 0)),

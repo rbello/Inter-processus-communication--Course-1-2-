@@ -17,5 +17,5 @@ public class WrongStep2 implements IStep2Strategy {
 		// Erreur : tenter de prendre directement sans vérifier que la machine soit prête
 		executor.executeJob();
 	}
-
+	
 }

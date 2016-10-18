@@ -16,6 +16,12 @@ import exia.ipc.entities.Node;
 import exia.ipc.entities.Product;
 import exia.ipc.entities.PrositIPC;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public class Mobile extends JLabel {
 
 	private static final long serialVersionUID = 1L;
@@ -31,7 +37,7 @@ public class Mobile extends JLabel {
 	/**
 	 * Truck
 	 */
-	public Mobile() {
+	public Mobile(GamePanel panel) {
 		setSize(45, 34);
 		setIcon(new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/Truck.png")));
 		setLocation(new Point(472, 185));
@@ -40,6 +46,8 @@ public class Mobile extends JLabel {
 		route.add(new Point(new Point(472, 185)));
 		route.add(new Point(new Point(472, 230)));
 		route.add(new Point(new Point(-80, 230)));
+		
+		route = panel.applyRatio(route);
 		
 		next = route.remove(0);
 		
@@ -55,20 +63,21 @@ public class Mobile extends JLabel {
 			scenario.addScenarioActor(timeline);
 		}
 		
-		
 	}
 	
 	/**
 	 * Packages
 	 */
-	public Mobile(Product p, Node from, Node to) {
+	public Mobile(GamePanel panel, Product p, Node from, Node to) {
 		
 		route = new ArrayList<Point>(Arrays.asList(from.getRoute(to)));
 		route.add(to.getInputLocation());
 		
+		route = panel.applyRatio(route);
+		
 		this.scenario = new TimelineScenario.Sequence();
 		
-		Point last = from.getOutputLocation();
+		Point last = panel.applyRatio(from.getOutputLocation());
 		for (Point pt : route) {
 			Timeline timeline = new Timeline(this);
 			timeline.addPropertyToInterpolate("location", last.getLocation(), pt);

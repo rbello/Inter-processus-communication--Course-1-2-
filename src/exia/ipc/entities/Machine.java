@@ -2,6 +2,12 @@ package exia.ipc.entities;
 
 import java.awt.Point;
 
+/**
+ * Communication Inter-Processus (IPC)
+ * 
+ * @author remi.bello.pro@gmail.com
+ * @link https://github.com/rbello
+ */
 public abstract class Machine extends Node implements Runnable {
 
 	Machine(String name, Point indicatorLocation, Point inputLocation, Point outputLocation) {
@@ -10,7 +16,6 @@ public abstract class Machine extends Node implements Runnable {
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 	}
 	
 	Node getOutputNode() {
