@@ -14,7 +14,7 @@ import exia.ipc.exceptions.NoMoreProductsException;
  * @author remi.bello.pro@gmail.com
  * @link https://github.com/rbello
  */
-public class InputDock extends Node implements Runnable {
+public final class InputDock extends Node implements Runnable {
 
 	private List<Product> stock = new ArrayList<Product>();
 	private boolean working = false;

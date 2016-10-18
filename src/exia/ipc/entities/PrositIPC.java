@@ -1,5 +1,6 @@
 package exia.ipc.entities;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.net.URL;
@@ -15,6 +16,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineEvent.Type;
 import javax.sound.sampled.LineListener;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.pushingpixels.trident.TimelineScenario;
@@ -36,29 +38,42 @@ import exia.ipc.ihm.ViewController;
  * @author remi.bello.pro@gmail.com
  * @link https://github.com/rbello
  */
-public class PrositIPC {
+public final class PrositIPC {
 	
+	/**
+	 * Liste des tâches de fond.
+	 */
 	private static ArrayList<Node> jobs;
 	
 	public static IStep1Strategy Step1;
 	public static IStep2Strategy Step2;
 	public static IStep3Strategy Step3;
 
+	/**
+	 * Controleur de la vue.
+	 */
 	private static ViewController ctrl;
 
-	private static int score = 0;
-
+	/**
+	 * Référence vers le quai de sortie.
+	 */
 	private static OutputDock outputDock;
 
+	// Gestion des effets sonores
 	private static AudioInputStream audioStream;
 	private static AudioFormat audioFormat;
-
 	private static int audioSize;
-
 	private static byte[] audioData;
+	private static DataLine.Info audioInfo;
 
-	private static javax.sound.sampled.DataLine.Info audioInfo;
-
+	/**
+	 * Le score actuel.
+	 */
+	private static int score = 0;
+	
+	/**
+	 * Constructeur statique.
+	 */
 	static {
 		
 		Step1 = new WrongStep1();
@@ -130,27 +145,42 @@ public class PrositIPC {
 		
 	}
 
+	/**
+	 * Pas de constructeur public.
+	 */
+	private PrositIPC() {
+	}
+
+	/**
+	 * Lancement de l'application
+	 */
 	public static void start() {
-		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				// Construction de la vue et de son controleur
 				View v = new View();
 				ctrl = new ViewController(v);
+				// Affichage de la vue
 				ctrl.run();
+				// Lancement des threads
 				beginStart();
 			}
 		});
-		
 	}
 	
 	private static void beginStart() {
 		
 		System.out.println("Go !");
 		
+		// Initialisation des machines
 		for (Node r : jobs) {
+			
+			// Lancement des threads
 			if (r instanceof Runnable) {
 				new Thread((Runnable)r, "Thread " + r.getClass().getSimpleName()).start();				
 			}
+			
+			// Création des indicateurs de capacité 
 			Indicator indicator = new Indicator(r.getIndicatorLocation());
 			r.addIndicatorListener(indicator);
 			indicator.setSize(new Dimension(16, 14));
@@ -158,23 +188,11 @@ public class PrositIPC {
 			ctrl.view.gamePanel.add(indicator);
 			
 			// Debug : afficher les entrées/sorties des machines sur la vue
-//			if (r.getInputLocation() != null) {
-//				JPanel p = new JPanel();
-//				p.setSize(3, 3);
-//				p.setBackground(Color.GREEN);
-//				p.setLocation(r.getInputLocation());
-//				v.gamePanel.add(p);
-//			}
-//			if (r.getOutputLocation() != null) {
-//				JPanel p = new JPanel();
-//				p.setSize(3, 3);
-//				p.setBackground(Color.BLUE);
-//				p.setLocation(r.getOutputLocation());
-//				v.gamePanel.add(p);
-//			}
+			//debugInOut(r);
 			
 		}
 		
+		// Tâche redondante pour la sortie des produits terminés
 		new Timer().scheduleAtFixedRate(new TimerTask() {
 			public void run() {
 				SwingUtilities.invokeLater(new Runnable() {
@@ -190,8 +208,25 @@ public class PrositIPC {
 		}, 30000L, 30000L);
 		
 	}
+
+	static void debugInOut(Node r) {
+		if (r.getInputLocation() != null) {
+			JPanel p = new JPanel();
+			p.setSize(3, 3);
+			p.setBackground(Color.GREEN);
+			p.setLocation(r.getInputLocation());
+			ctrl.view.gamePanel.add(p);
+		}
+		if (r.getOutputLocation() != null) {
+			JPanel p = new JPanel();
+			p.setSize(3, 3);
+			p.setBackground(Color.BLUE);
+			p.setLocation(r.getOutputLocation());
+			ctrl.view.gamePanel.add(p);
+		}
+	}
 	
-	static void playSound() {
+	static void playCoinSound() {
 		try {
 			final Clip clip = (Clip) AudioSystem.getLine(audioInfo);
             clip.open(audioFormat, audioData, 0, audioSize);
@@ -210,14 +245,30 @@ public class PrositIPC {
 		}
 	}
 
+	/**
+	 * Enregistrer la création d'un objet managé.
+	 */
 	static void register(Node job) {
 		jobs.add(job);
 	}
+	
+	/**
+	 * Lancer l'animation d'un camion de récupération des produits finis.
+	 */
+	static void truck() {
+		move(new Mobile(ctrl.view.gamePanel));
+	}
 
+	/**
+	 * Déplacer un produit p d'un noeud from vers un noeud to.
+	 */
 	static void move(Product p, Node from, Node to) {
 		move(new Mobile(ctrl.view.gamePanel, p, from, to));
 	}
 	
+	/**
+	 * Méthode interne pour lancer le déplacement d'un élément mobile.
+	 */
 	private static void move(final Mobile mobile) {
 		
 		// On demande le scénario de mouvement au mobile
@@ -252,10 +303,9 @@ public class PrositIPC {
 		
 	}
 
-	static void truck() {
-		move(new Mobile(ctrl.view.gamePanel));
-	}
-	
+	/**
+	 * Identique à move mais asynchrone, renvoie le thread (lancé) chargé du déplacement.
+	 */
 	static Thread moveAsynch(final Product p, final Node from, final Node to) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
@@ -266,10 +316,16 @@ public class PrositIPC {
 		return t;
 	}
 
+	/**
+	 * Renvoie l'instance de la vue.
+	 */
 	public static View getView() {
 		return ctrl.view;
 	}
 
+	/**
+	 * Gestion des erreurs. L'affichage se fait dans la console de l'application.
+	 */
 	public static void handleError(Throwable e) {
 		if ("exia.ipc.exceptions".equals(e.getClass().getPackage().getName())) {
 			System.err.println("Alerte : " + e.getMessage());
@@ -280,11 +336,17 @@ public class PrositIPC {
 		}
 	}
 
+	/**
+	 * Ajouter du score.
+	 */
 	static void score() {
 		score  += 10;
-		playSound();
+		playCoinSound();
 	}
 	
+	/**
+	 * Renvoie le score actuel du joueur.
+	 */
 	public static int getScore() {
 		return score;
 	}

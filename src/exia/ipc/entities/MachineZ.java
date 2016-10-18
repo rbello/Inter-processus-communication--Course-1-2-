@@ -10,7 +10,7 @@ import exia.ipc.exceptions.MachineAllreadyUsedException;
  * @author remi.bello.pro@gmail.com
  * @link https://github.com/rbello
  */
-public class MachineZ extends Machine {
+public final class MachineZ extends Machine {
 
 	private Product job = null;
 	private MachineZ next;

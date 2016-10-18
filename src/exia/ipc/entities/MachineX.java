@@ -11,7 +11,7 @@ import exia.ipc.exceptions.NoMoreProductsException;
  * @author remi.bello.pro@gmail.com
  * @link https://github.com/rbello
  */
-public class MachineX extends Machine {
+public final class MachineX extends Machine {
 
 	private int tempsTraitement = 4;
 	

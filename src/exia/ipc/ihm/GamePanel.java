@@ -22,14 +22,10 @@ public class GamePanel extends JPanel {
 
 	private Dimension dim = new Dimension(587, 324);
 	private Image imgA = new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/BackgroundA.png")).getImage();
-	//private Image imgB = new ImageIcon(GamePanel.class.getResource("/exia/ipc/ihm/res/BackgroundB.png")).getImage();
-	
-	private boolean peer = true;
 	
 	@Override
 	public void paint(Graphics g) {
 		g.drawImage(imgA, 0, 0, getWidth(), getHeight(), null);
-		peer = !peer;
 		super.paint(g);
 	}
 	
@@ -40,11 +36,6 @@ public class GamePanel extends JPanel {
 	public double getRatioY() {
 		return getHeight() / dim.getHeight();
 	}
-	
-//	@Override
-//	public Dimension getMaximumSize() {
-//		return dim;
-//	}
 	
 	@Override
 	public Dimension getMinimumSize() {

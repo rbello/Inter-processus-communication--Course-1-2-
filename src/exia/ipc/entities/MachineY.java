@@ -11,7 +11,7 @@ import exia.ipc.exceptions.ProductLostException;
  * @author remi.bello.pro@gmail.com
  * @link https://github.com/rbello
  */
-public class MachineY extends Machine {
+public final class MachineY extends Machine {
 
 	MachineY() {
 		super("Y", new Point(328, 72), new Point(260, 95), new Point(335, 95));

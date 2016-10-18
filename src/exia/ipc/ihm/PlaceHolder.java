@@ -14,11 +14,11 @@ public class PlaceHolder<N> {
 		setValue(val);
 	}
 
-	public void setValue(N val) {
+	public synchronized void setValue(N val) {
 		this.val = val;
 	}
 	
-	public N getValue() {
+	public synchronized  N getValue() {
 		return this.val;
 	}
 	
