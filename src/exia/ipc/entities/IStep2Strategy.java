@@ -1,7 +1,5 @@
 package exia.ipc.entities;
 
-import exia.ipc.exceptions.MachineAllreadyUsedException;
-
 /**
  * Communication Inter-Processus (IPC)
  * 
@@ -10,8 +8,8 @@ import exia.ipc.exceptions.MachineAllreadyUsedException;
  */
 public interface IStep2Strategy {
 
-	void onMachineRequest(MachineX applicant, MachineY executor) throws InterruptedException;
+	void onMachineRequest(MachineX applicant, MachineY executor) throws Exception;
 
-	void onMachineExecute(MachineX applicant, MachineY executor) throws MachineAllreadyUsedException;
+	void onMachineExecute(MachineX applicant, MachineY executor) throws Exception;
 	
 }

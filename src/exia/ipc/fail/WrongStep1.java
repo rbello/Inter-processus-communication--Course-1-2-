@@ -4,16 +4,14 @@ import exia.ipc.entities.IStep1Strategy;
 import exia.ipc.entities.InputDock;
 import exia.ipc.entities.MachineX;
 import exia.ipc.entities.Product;
-import exia.ipc.exceptions.CurrentAccessException;
-import exia.ipc.exceptions.NoMoreProductsException;
 
 public class WrongStep1 implements IStep1Strategy {
 
 	@Override
-	public Product onMachineRequest(InputDock dock, MachineX machine)
-			throws NoMoreProductsException, CurrentAccessException {
+	public Product onMachineRequest(InputDock dock, MachineX machine) throws Exception {
 		// Erreur : tenter de prendre directement sans vérifier
-		return dock.accept();
+		return null;
+		//return dock.accept();
 	}
 
 }

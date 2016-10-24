@@ -3,6 +3,7 @@ package exia.ipc.entities;
 import java.awt.Point;
 
 import exia.ipc.exceptions.CurrentAccessException;
+import exia.ipc.exceptions.IllegalOperationException;
 import exia.ipc.exceptions.NoMoreProductsException;
 
 /**
@@ -45,6 +46,10 @@ public final class MachineX extends Machine {
 					Thread t1 = PrositIPC.moveAsynch(p1, q1, this);
 					PrositIPC.move(p2, q2, this);
 					t1.join();
+					
+					if (p1 == null) throw new IllegalOperationException(q1, "la méthode onMachineRequest() a renvoyé un NULL");
+					if (p2 == null) throw new IllegalOperationException(q2, "la méthode onMachineRequest() a renvoyé un NULL");
+					
 					notifyChange(1);
 					final Product p3 = executeWork();
 					p3.nextStep();

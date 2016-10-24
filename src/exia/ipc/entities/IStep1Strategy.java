@@ -1,8 +1,5 @@
 package exia.ipc.entities;
 
-import exia.ipc.exceptions.CurrentAccessException;
-import exia.ipc.exceptions.NoMoreProductsException;
-
 /**
  * Communication Inter-Processus (IPC)
  * 
@@ -11,6 +8,6 @@ import exia.ipc.exceptions.NoMoreProductsException;
  */
 public interface IStep1Strategy {
 
-	Product onMachineRequest(InputDock dock, MachineX machine) throws NoMoreProductsException, CurrentAccessException;
+	Product onMachineRequest(InputDock dock, MachineX machine) throws Exception;
 	
 }
