@@ -52,7 +52,7 @@ public final class MachineX extends Machine {
 					
 					notifyChange(1);
 					final Product p3 = executeWork();
-					p3.nextStep();
+					p3.addOperation(Product.X);
 					
 					final MachineY next = (MachineY) getOutputNode();
 					PrositIPC.Step2.onMachineRequest(MachineX.this, next);

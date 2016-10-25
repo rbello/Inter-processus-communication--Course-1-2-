@@ -29,8 +29,8 @@ public final class MachineY extends Machine {
 
 			// On fabrique le nouveau produit, et on lui donne 2 points d'avancement
 			final Product product = new Product(Product.Type.M4);
-			product.nextStep();
-			product.nextStep();
+			product.addOperation(Product.X);
+			product.addOperation(Product.Y);
 		
 			// On demande à l'étudiant de choisir la bonne machine
 			final MachineZ machine = PrositIPC.Step3.chooseMachine((MachineZ) getRoute(0), (MachineZ) getRoute(1));
@@ -49,8 +49,8 @@ public final class MachineY extends Machine {
 						PrositIPC.Step3.onMachineRequest(
 								product,
 								machine,
-								machine.getNext(),
-								machine.getNext().getNext()
+								machine.getNextMachine(),
+								machine.getNextMachine().getNextMachine()
 						);
 					} catch (Throwable t) {
 						PrositIPC.handleError(t);

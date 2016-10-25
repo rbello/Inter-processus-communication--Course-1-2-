@@ -10,8 +10,7 @@ public class WrongStep1 implements IStep1Strategy {
 	@Override
 	public Product onMachineRequest(InputDock dock, MachineX machine) throws Exception {
 		// Erreur : tenter de prendre directement sans vérifier
-		return null;
-		//return dock.accept();
+		return dock.accept();
 	}
 
 }
